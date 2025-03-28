@@ -68,16 +68,16 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [v] Commit: `Implement list_all_as_string function in Notification repository.`
     -   [v] Write answers of your learning module's "Reflection Subscriber-1" questions in this README.
 -   **STAGE 3: Implement services and controllers**
-    -   [ ] Commit: `Create Notification service struct skeleton.`
-    -   [ ] Commit: `Implement subscribe function in Notification service.`
-    -   [ ] Commit: `Implement subscribe function in Notification controller.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification service.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification controller.`
-    -   [ ] Commit: `Implement receive_notification function in Notification service.`
-    -   [ ] Commit: `Implement receive function in Notification controller.`
-    -   [ ] Commit: `Implement list_messages function in Notification service.`
-    -   [ ] Commit: `Implement list function in Notification controller.`
-    -   [ ] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
+    -   [v] Commit: `Create Notification service struct skeleton.`
+    -   [v] Commit: `Implement subscribe function in Notification service.`
+    -   [v] Commit: `Implement subscribe function in Notification controller.`
+    -   [v] Commit: `Implement unsubscribe function in Notification service.`
+    -   [v] Commit: `Implement unsubscribe function in Notification controller.`
+    -   [v] Commit: `Implement receive_notification function in Notification service.`
+    -   [v] Commit: `Implement receive function in Notification controller.`
+    -   [v] Commit: `Implement list_messages function in Notification service.`
+    -   [v] Commit: `Implement list function in Notification controller.`
+    -   [v] Write answers of your learning module's "Reflection Subscriber-2" questions in this README.
 
 ## Your Reflections
 This is the place for you to write reflections:
@@ -89,7 +89,31 @@ This is the place for you to write reflections:
     Karena RWLock memungkinkan multiple thread untuk membaca data secara bersamaan, sekaligus hanya membiarkan satu thread yang boleh melakukan write (saat write tidak boleh ada yang read). Sedangkan Mutex memastikan hanya satu thread yang bisa mengakses data, baik itu read atau write.
 
 <br><br>
+
 2. In this tutorial, we used lazy_static external library to define Vec and DashMap as a “static” variable. Compared to Java where we can mutate the content of a static variable via a static function, why did not Rust allow us to do so?<br>
     Rust dirancang untuk menjamin keamanan memori dan thread safety tanpa bergantung pada garbage collector seperti di java, sehingga harus lebih ketat dalam mengontrol akses ke data yang dibagikan antar-thread. Dengan begitu Rust tidak mengizinkan kita memutasi isi dari static variable karena hal tersebut tidak thread safe. lazy_static membuat variabel yang diinisialisasi secara lazy (saat pertama kali diakses) dan menjamin thread safety, dimana hal tersebut bekerja seperti Singleton pattern.
 
 #### Reflection Subscriber-2
+1. Have you explored things outside of the steps in the tutorial, for example: src/lib.rs? If not, explain why you did not do so. If yes, explain things that you have learned from those other parts of code.<br>
+Ya, saya telah menjelajahi bagian src/lib.rs. File ini berisi berbagai komponen penting yang digunakan oleh bagian lain dalam aplikasi, seperti konfigurasi aplikasi, respons kesalahan, dan root URL. Salah satu bagian yang menarik dalam lib.rs adalah penggunaan lazy_static!, yang memungkinkan inisialisasi statis untuk objek yang biasanya memerlukan alokasi dinamis. Contohnya, REQWEST_CLIENT adalah instance dari Client yang dibuat menggunakan ClientBuilder::new().build().unwrap(), sehingga dapat digunakan secara global tanpa perlu membuat instance baru setiap kali dibutuhkan. Begitu juga dengan APP_CONFIG, yang dibuat menggunakan AppConfig::generate(), memastikan bahwa konfigurasi aplikasi hanya diinisialisasi sekali dan dapat diakses dari berbagai bagian program tanpa harus memuat ulang atau membuat instance baru.
+```rust
+lazy_static! {
+    pub static ref REQWEST_CLIENT: Client = ClientBuilder::new().build().unwrap();
+    pub static ref APP_CONFIG: AppConfig = AppConfig::generate();
+}
+```
+
+2. Since you have completed the tutorial by now and have tried to test your notification system by spawning multiple instances of Receiver, explain how Observer pattern eases you to plug in more subscribers. How about spawning more than one instance of Main app, will it still be easy enough to add to the system?<br>
+Penerapan Observer pattern dalam sistem ini sangat membantu dalam menambahkan subscriber baru karena sistem dirancang dengan prinsip open-closed, sehingga kita dapat menambahkan Observer baru tanpa harus mengubah kode yang sudah ada. Setiap subscriber cukup didaftarkan ke publisher, dan mereka akan menerima notifikasi secara otomatis. Jika kita ingin menjalankan lebih dari satu instance Main App, hal ini tetap memungkinkan, tetapi setiap instance aplikasi utama harus memiliki daftar subscriber-nya sendiri. Untuk menambahkan subscriber ke aplikasi yang berbeda, kita dapat melakukannya dengan memanggil API yang sesuai, sehingga setiap instance tetap dapat mengelola subscriber mereka secara independen.
+
+<br><br>
+
+3. Have you tried to make your own Tests, or enhance documentation on your Postman collection? If you have tried those features, tell us whether it is useful for your work (it can be your tutorial work or your Group Project).<br>
+Ya, saya telah mencoba melakukan testing dan menambahkan dokumentasi pada Postman collection. Fitur ini sangat berguna dalam menguji apakah aplikasi berjalan sesuai harapan, baik untuk proyek tutorial maupun proyek kelompok. Dengan melakukan pengujian, kita dapat memastikan bahwa setiap permintaan yang dikirim ke API memberikan respons yang benar dan sesuai dengan data yang ada di aplikasi. Selain itu, Postman collection memudahkan anggota tim untuk memahami cara kerja API dan bagaimana setiap endpoint berfungsi, sehingga kolaborasi menjadi lebih efisien.
+
+
+
+
+
+
+
